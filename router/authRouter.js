@@ -3,12 +3,14 @@ import AuthController from "../Controller/authController.js"
 import cors from "cors";
 import {check} from "express-validator";
 import AuthMiddleware from "../middleware/authMiddleware.js";
+import dotenv from "dotenv";
 
+dotenv.config();
 const router = new Router();
 router.use(cors({
     credentials: true,
     origin: process.env.CLIENT_URL,      //access-control-allow-credentials:true
-    optionSuccessStatus:200
+    optionSuccessStatus:200,
 }));
 
 router.post("/registration",[
