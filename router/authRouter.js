@@ -1,9 +1,15 @@
 import Router from 'express';
 import AuthController from "../Controller/authController.js"
+import cors from "cors";
 import {check} from "express-validator";
 import AuthMiddleware from "../middleware/authMiddleware.js";
 
 const router = new Router();
+router.use(cors({
+    credentials: true,
+    origin: process.env.CLIENT_URL,      //access-control-allow-credentials:true
+    optionSuccessStatus:200
+}));
 
 router.post("/registration",[
     check("username", "Имя пользователя не может быть пустым").notEmpty(),

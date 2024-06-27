@@ -39,8 +39,8 @@ class AuthController {
                 return res.status(400).json({message: `Введен неверный пароль`})
             }
             const token = TokenService.generateAccessToken(user._id, user.roles)
-
-            res.json({token: token, message: "Успешная авторизация"})
+            user.password = undefined;
+            res.json({token: token, message: "Успешная авторизация", user: user})
         } catch (e) {
             console.log(e)
             res.status(400).json("Ошибка")
