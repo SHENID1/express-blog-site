@@ -16,7 +16,7 @@ router.use(cors({
 router.post("/registration",[
     check("username", "Имя пользователя не может быть пустым").notEmpty(),
     check("password", "Пароль дожен быть больше 4 и меньше 10 символов").notEmpty().isLength({min:4, max:15}),
-], AuthController.registration)
+], AuthController.register)
 router.post("/login", AuthController.login)
 router.get("/users", AuthMiddleware, AuthController.getUsers)
 

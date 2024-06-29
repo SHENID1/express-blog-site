@@ -1,61 +1,66 @@
-import User from "../models/User.js";
-import Role from "../models/Role.js";
-import bcrypt from "bcrypt";
-import TokenService from "../service/tokenService.js"
 import {validationResult} from "express-validator";
+import ApiError from "../exceptions/api-error.js";
+import UserService from '../service/user-service.js'
 
-class AuthController {
-    async registration(req, res) {
+class authController {
+    async register (req, res, next) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).send({errors: errors.array()});
+                return next(ApiError.BadRequest('Указаны неверные поля', errors.array()))
             }
             const {username, password} = req.body;
-            if (!username || !password) {
-                res.status(401).json("Не указаны поля!")
-            }
-            const candidate = await User.findOne({username})
-            if (candidate) return res.status(400).json({message: `User already exists`})
-            const hashPassword = bcrypt.hashSync(password, 7);
-
-            const userRole = await Role.findOne({value: "USER"})
-            const user = new User({username, password: hashPassword, roles: [userRole.value]})
-            await user.save()
-            res.json({message: `Пользователь был успешно зарегестрирован`})
+            const userData = await UserService.registration(username, password, ["ADMIN"])
+            console.log(5)
+            res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+            return res.status(200).json(userData);
         } catch (e) {
-            console.log(e)
-            res.status(400).json("Ошибка")
+            next(e)
         }
     }
-
-    async login(req, res) {
+    async login (req, res, next) {
         try {
-            const {username, password} = req.body;
-            const user = await User.findOne({username})
-            if (!user) return res.status(400).json({message: `Пользователь ${username} не найден!`})
-            const validPassword = bcrypt.compareSync(password, user.password)
-            if (!validPassword) {
-                return res.status(400).json({message: `Введен неверный пароль`})
-            }
-            const token = TokenService.generateAccessToken(user._id, user.roles)
-            user.password = undefined;
-            res.json({token: token, message: "Успешная авторизация", user: user})
+            const {login, password} = req.body;
+            const userData = await UserService.login(login, password)
+            res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+            return res.status(200).json(userData);
         } catch (e) {
-            console.log(e)
-            res.status(400).json("Ошибка")
+            next(e)
         }
     }
-
-    async getUsers(req, res) {
+    async logout (req, res, next) {
         try {
-
-            res.json("Server Worked")
+            const {refreshToken} = req.cookies;
+            if (!refreshToken){
+                return res.status(200).json("Токен не найден")
+            }
+            const token = await UserService.logout(refreshToken);
+            res.clearCookie('refreshToken');
+            return res.json(token);
         } catch (e) {
             console.log(e)
-            res.status(400).json("Ошибка")
+            next(e)
         }
     }
-
+    async refresh (req, res, next) {
+        try {
+            const {refreshToken} = req.cookies;
+            const token = await UserService.refresh(refreshToken)
+            res.clearCookie('refreshToken');
+            res.cookie('refreshToken', token.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+            res.status(200).json(token);
+        } catch (e) {
+            next(e)
+        }
+    }
+    async getUsers (req, res, next) {
+        try {
+            const users = await UserService.getAllUsers()
+            // console.log(req.ipInfo);
+            res.status(200).json(users);
+        } catch (e) {
+            next(e)
+        }
+    }
 }
-export default new AuthController()
+export default new authController;
