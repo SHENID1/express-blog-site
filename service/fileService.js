@@ -1,7 +1,6 @@
 import * as uuid from 'uuid';
 import * as path from "path";
 import * as fs from "fs";
-import Event from "../../interactive-school-map-server/mongoose_scheme/event.js"
 
 function getSize(path){
     let size = 0;
@@ -48,21 +47,6 @@ class fileService {
        catch (e) {
            return 0;
        }
-    }
-    async clearFile() {
-        const events = await Event.find()
-
-        let ll = []
-        events.forEach((obj) => {
-            ll.push(obj.image)
-        })
-        fs.readdir('./eventsImage/', (err, files) => {
-            files.forEach(filename => {
-              if (!ll.includes(filename)){
-                  this.deleteFile(filename)
-              }
-            });
-          });
     }
 }
 

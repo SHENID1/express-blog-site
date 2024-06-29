@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import Token from "../../interactive-school-map-server/mongoose_scheme/token.js";
+import Token from "../models/Token.js";
 
 class tokenService{
     generateTokens(payload){

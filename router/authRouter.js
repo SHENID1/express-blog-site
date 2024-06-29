@@ -18,6 +18,8 @@ router.post("/registration",[
     check("password", "Пароль дожен быть больше 4 и меньше 10 символов").notEmpty().isLength({min:4, max:15}),
 ], AuthController.register)
 router.post("/login", AuthController.login)
+router.post('/logout', AuthController.logout);
+router.get('/refresh', AuthController.refresh);
 router.get("/users", AuthMiddleware, AuthController.getUsers)
 
 export default router;

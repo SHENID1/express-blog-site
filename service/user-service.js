@@ -6,7 +6,7 @@ import ApiError from "../exceptions/api-error.js";
 import Role from "../models/Role.js";
 
 class UserService{
-    async registration(login, password, roles){
+    async registration(login, password){
         const candidate = await User.findOne({username: login})
         if (candidate){
             throw ApiError.BadRequest("Логин уже занят")
@@ -15,7 +15,6 @@ class UserService{
         const userRole = await Role.findOne({value: "USER"})
         const user = await User.create({username: login, password: hashPassword, roles: userRole.value})
         const userDto = new UserDto(user);
-        console.log(userDto)
 
         const tokens = tokenService.generateTokens({...userDto})
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
@@ -27,7 +26,7 @@ class UserService{
     }
 
     async login(login, password) {
-        const user = await User.findOne({login})
+        const user = await User.findOne({username: login})
         if (!user){
             throw ApiError.BadRequest("Пользователь не был найден или неверный пароль")
         }

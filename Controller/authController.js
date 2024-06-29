@@ -11,7 +11,6 @@ class authController {
             }
             const {username, password} = req.body;
             const userData = await UserService.registration(username, password, ["ADMIN"])
-            console.log(5)
             res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
             return res.status(200).json(userData);
         } catch (e) {
@@ -20,8 +19,8 @@ class authController {
     }
     async login (req, res, next) {
         try {
-            const {login, password} = req.body;
-            const userData = await UserService.login(login, password)
+            const {username, password} = req.body;
+            const userData = await UserService.login(username, password)
             res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
             return res.status(200).json(userData);
         } catch (e) {
