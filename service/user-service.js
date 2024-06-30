@@ -67,7 +67,8 @@ class UserService{
         return {...tokens, user: userDto}
     }
     async getAllUsers() {
-        return await User.find();
+        const users = await User.find();
+        return users
     }
 }
 export default new UserService;
