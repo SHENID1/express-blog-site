@@ -27,10 +27,10 @@ export default new class CategoriesController {
     }
     async delete(req, res, next) {
         try {
-            const {name} = req.body;
-            const CategoriesObject = await Categories.findOne({name})
+            const {id} = req.params;
+            const CategoriesObject = await Categories.findById(id)
             if (!CategoriesObject) return res.status(400).json({error: 'Category not found'})
-            await Categories.deleteOne({_id: CategoriesObject._id})
+            await Categories.findByIdAndDelete(id);
             return res.status(200).json({message: 'Category deleted'});
         } catch (e) {
             next(e)

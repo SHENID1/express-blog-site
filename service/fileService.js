@@ -21,7 +21,7 @@ class fileService {
     async saveFile(file){
         try{
             const fileName = uuid.v4() + ".jpg";
-            const filePath = path.resolve("eventsImage", fileName)
+            const filePath = path.resolve("static", fileName)
             await file.mv(filePath)
             return fileName;
         }
@@ -31,7 +31,7 @@ class fileService {
     }
     async updateFile(file, fileName) {
         try {
-            const filePath = path.resolve("eventsImage", fileName)
+            const filePath = path.resolve("static", fileName)
             fs.rmSync(filePath);
             await file.mv(filePath)
         }
@@ -41,7 +41,7 @@ class fileService {
     }
     deleteFile(fileName) {
         try {
-            const filePath = path.resolve("eventsImage", fileName)
+            const filePath = path.resolve("static", fileName)
             fs.rmSync(filePath);
         }
        catch (e) {

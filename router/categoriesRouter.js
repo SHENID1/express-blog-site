@@ -12,7 +12,7 @@ categories_router.use(cors({
 
 categories_router.post("/categories",AuthMiddleware, CategoriesController.create)
 categories_router.put("/categories",AuthMiddleware, CategoriesController.update)
-categories_router.delete("/categories",AuthMiddleware, CategoriesController.delete)
+categories_router.delete("/categories/:id",AuthMiddleware, CategoriesController.delete)
 categories_router.get("/categories", CategoriesController.getAllCategories)
 
 
