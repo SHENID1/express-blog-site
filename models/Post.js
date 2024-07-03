@@ -3,6 +3,7 @@ import {Schema, model} from 'mongoose';
 const Post = new Schema({
     title: {type: String, required: true, unique: true},
     urlPreview: {type: String, required: true},
+    isVisible: {type: Boolean, required: true},
     content: {type: [String], required: true},
     commentaries: [
             {type: Schema.Types.ObjectId, ref: 'Comment', default: []}
