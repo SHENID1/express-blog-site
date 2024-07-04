@@ -17,8 +17,10 @@ post_router.post("/post",AuthMiddleware, PostController.create)
 post_router.post("/image",AuthMiddleware, PostController.Upload_Image)
 post_router.delete("/image/:fileName",AuthMiddleware, PostController.Delete_Image)
 post_router.put("/post",AuthMiddleware, PostController.update)
-post_router.delete("/post",AuthMiddleware, PostController.delete)
+post_router.delete("/post/:id",AuthMiddleware, PostController.delete)
 post_router.get("/post",AuthMiddleware, PostController.getPosts)
+post_router.get("/post/:id", PostController.getPost)
+post_router.get("/posts/categories/:id", PostController.getPostByCategories)
 
 
 export default post_router;

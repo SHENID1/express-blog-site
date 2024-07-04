@@ -1,5 +1,6 @@
 import Post from "../models/Post.js";
 import fileService from "../service/fileService.js";
+import Categories from "../models/Categories.js";
 
 
 export default new class PostController {
@@ -37,9 +38,10 @@ export default new class PostController {
 
     async update(req, res, next) {
         try {
-            const {} = req.body;
-
-            return res.status(200).json();
+           const newData = req.body;
+            if (!newData._id) return res.status(400).json({error: 'Не указано _id!'});
+            const updatedPosts = await Post.findByIdAndUpdate({_id: newData._id}, newData, {new: true})
+            return res.status(200).json(updatedPosts);
         } catch (e) {
             next(e)
         }
@@ -47,9 +49,9 @@ export default new class PostController {
 
     async delete(req, res, next) {
         try {
-            const {} = req.body;
-
-            return res.status(200).json();
+            const {id} = req.params;
+            await Post.findByIdAndDelete(id);
+            return res.status(200).json("OK");
         } catch (e) {
             next(e)
         }
@@ -60,6 +62,26 @@ export default new class PostController {
             const {} = req.body;
 
             return res.status(200).json();
+        } catch (e) {
+            next(e)
+        }
+    }
+    async getPost(req, res, next) {
+        try {
+            const {id} = req.params;
+            const post = await Post.findById(id);
+            return res.status(200).json(post);
+        } catch (e) {
+            next(e)
+        }
+    }
+    async getPostByCategories(req, res, next) {
+        try {
+            const {id} = req.params;
+            const Cat = await Categories.findById(id)
+            if (!Cat) return res.status(400).json({error: 'Category is None'})
+            const post = await Post.find({categories: Cat});
+            return res.status(200).json(post);
         } catch (e) {
             next(e)
         }

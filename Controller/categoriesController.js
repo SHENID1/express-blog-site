@@ -44,5 +44,15 @@ export default new class CategoriesController {
             next(e)
         }
     }
+    async getNameById(req, res, next) {
+        try {
+            const {id} = req.params;
+            const cat = await Categories.findById(id);
+            if (!cat) return res.status(400).json({error: 'Category not found'})
+            return res.status(200).json(cat.name);
+        } catch (e) {
+            next(e)
+        }
+    }
 
 }
