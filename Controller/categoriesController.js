@@ -1,4 +1,5 @@
 import Categories from "../models/Categories.js";
+import Post from "../models/Post.js";
 
 export default new class CategoriesController {
     async create(req, res, next) {
@@ -12,6 +13,7 @@ export default new class CategoriesController {
             next(e)
         }
     }
+
     async update(req, res, next) {
         try {
             const {oldName, newName} = req.body;
@@ -25,9 +27,11 @@ export default new class CategoriesController {
             next(e)
         }
     }
+
     async delete(req, res, next) {
         try {
             const {id} = req.params;
+            if (id === "all") return res.status(401).json({error: 'Category not found'})
             const CategoriesObject = await Categories.findById(id)
             if (!CategoriesObject) return res.status(400).json({error: 'Category not found'})
             await Categories.findByIdAndDelete(id);
@@ -36,20 +40,35 @@ export default new class CategoriesController {
             next(e)
         }
     }
+
     async getAllCategories(req, res, next) {
         try {
-            const AllCategories = await Categories.find();
+            let AllCategories = JSON.parse(JSON.stringify(await Categories.find()));
+            for (let i = 0; i < AllCategories.length; i++) {
+                const cat = await Categories.findById(AllCategories[i]._id)
+                AllCategories[i].count = await Post.countDocuments({categories: cat})
+            }
+            const allCount = await Post.countDocuments()
+            AllCategories.splice(0, 0, {_id: "all", name: "ВСЕ", count: allCount});
+
+            // console.log(AllCategories)
             return res.status(200).json(AllCategories);
         } catch (e) {
             next(e)
         }
     }
-    async getNameById(req, res, next) {
+
+    async getCategoryById(req, res, next) {
         try {
             const {id} = req.params;
+            if (id === "all") {
+                const count = await Post.countDocuments()
+                return res.status(200).json({name: "ВСЕ", count, _id: "all"});
+            }
             const cat = await Categories.findById(id);
             if (!cat) return res.status(400).json({error: 'Category not found'})
-            return res.status(200).json(cat.name);
+            const count = await Post.countDocuments({categories: cat})
+            return res.status(200).json({name: cat.name, _id: cat._id, count});
         } catch (e) {
             next(e)
         }

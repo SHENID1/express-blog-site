@@ -1,7 +1,10 @@
 import Post from "../models/Post.js";
 import fileService from "../service/fileService.js";
 import Categories from "../models/Categories.js";
+import MailService from "../service/mailService.js";
+import dotenv from "dotenv";
 
+dotenv.config();
 
 export default new class PostController {
     async Upload_Image(req, res) {
@@ -29,6 +32,7 @@ export default new class PostController {
     async create(req, res, next) {
         try {
             const postData = req.body;
+            if (postData.categories === "all") return res.status(400).json("Фигня запрос");
             const PostObject = await Post.create(postData)
             return res.status(200).json(PostObject);
         } catch (e) {
@@ -38,8 +42,9 @@ export default new class PostController {
 
     async update(req, res, next) {
         try {
-           const newData = req.body;
+            const newData = req.body;
             if (!newData._id) return res.status(400).json({error: 'Не указано _id!'});
+            if (newData.categories === "all") return res.status(400).json({error: 'id is not all!'});
             const updatedPosts = await Post.findByIdAndUpdate({_id: newData._id}, newData, {new: true})
             return res.status(200).json(updatedPosts);
         } catch (e) {
@@ -66,21 +71,58 @@ export default new class PostController {
             next(e)
         }
     }
+
     async getPost(req, res, next) {
         try {
             const {id} = req.params;
             const post = await Post.findById(id);
+            // await MailService.sendEmail("dineshgembler@gmail.com", `${process.env.CLIENT_URL}/post/`)
             return res.status(200).json(post);
         } catch (e) {
             next(e)
         }
     }
+    async getFreePost(req, res, next) {
+        try {
+            const {id} = req.params;
+            const post = await Post.findById(id);
+            if (!post.isVisible) return res.status(403).json({message: "403 Нет доступа"});
+            post.categories = await Categories.findById(post.categories);
+            // await MailService.sendEmail("dineshgembler@gmail.com", `${process.env.CLIENT_URL}/post/`)
+
+            return res.status(200).json(post);
+        } catch (e) {
+            next(e)
+        }
+    }
+
     async getPostByCategories(req, res, next) {
         try {
             const {id} = req.params;
+            if (id === "all") {
+                const posts = await Post.find();
+                return res.status(200).json(posts);
+            }
+
             const Cat = await Categories.findById(id)
             if (!Cat) return res.status(400).json({error: 'Category is None'})
             const post = await Post.find({categories: Cat});
+            return res.status(200).json(post);
+        } catch (e) {
+            next(e)
+        }
+    }
+    async getFreePostByCategories(req, res, next) {
+        try {
+            const {id} = req.params;
+            if (id === "all") {
+                const posts = await Post.find({isVisible: true});
+                return res.status(200).json(posts);
+            }
+
+            const Cat = await Categories.findById(id)
+            if (!Cat) return res.status(400).json({error: 'Category is None'})
+            const post = await Post.find({categories: Cat, isVisible: true});
             return res.status(200).json(post);
         } catch (e) {
             next(e)
