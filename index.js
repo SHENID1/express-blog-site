@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import fileUpload from 'express-fileupload';
 import postRouter from "./router/postRouter.js";
 import categories_router from "./router/categoriesRouter.js";
+import mailer_router from "./router/mailerRouter.js"
 
 
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use("/auth", authRouter);
 app.use("/api", postRouter);
 app.use("/api", categories_router);
+app.use("/mail", mailer_router)
 app.use(express.static("static"));
 app.use(fileUpload({}));
 
