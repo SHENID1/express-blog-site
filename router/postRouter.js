@@ -13,6 +13,9 @@ post_router.use(cors({
 }));
 post_router.use(fileUpload({}));
 
+
+post_router.get('/bytes', AuthMiddleware, PostController.getBytes)
+post_router.post('/bytes', AuthMiddleware, PostController.clearBytes)
 post_router.post("/post",AuthMiddleware, PostController.create)
 post_router.post("/image",AuthMiddleware, PostController.Upload_Image)
 post_router.delete("/image/:fileName",AuthMiddleware, PostController.Delete_Image)

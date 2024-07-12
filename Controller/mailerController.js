@@ -1,6 +1,8 @@
-import Categories from "../models/Categories.js";
 import MailUser from "../models/MailerUser.js";
+import dotenv from "dotenv";
+import mailService from "../service/mailService.js";
 
+dotenv.config();
 
 export default new class MailerController {
     async createUser(req, res, next) {
@@ -9,6 +11,8 @@ export default new class MailerController {
             const MailUserCandidate = await MailUser.findOne({email})
             if (MailUserCandidate) return res.status(400).json({error: 'Mail already exists'})
             const MailUserObject = await MailUser.create({email})
+            const uri = `${req.protocol}://${req.get('host')}`
+            mailService.sendFirstEmail(email, uri, MailUserObject)
             return res.status(200).json(MailUserObject);
         } catch (e) {
             next(e)
@@ -18,8 +22,10 @@ export default new class MailerController {
         try {
             const {id} = req.params;
             await MailUser.findByIdAndDelete(id);
-            return res.status(200).json("Вы успешно отписались от рассылки");
+            res.redirect(`${process.env.CLIENT_URL}/successfulUnsubscriptionPage`);
+            // return res.status(200).json("Вы успешно отписались от рассылки");
         } catch (e) {
+            res.redirect(`${process.env.CLIENT_URL}/`);
             next(e)
         }
     }

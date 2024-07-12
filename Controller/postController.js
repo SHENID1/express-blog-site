@@ -3,6 +3,7 @@ import fileService from "../service/fileService.js";
 import Categories from "../models/Categories.js";
 import MailService from "../service/mailService.js";
 import dotenv from "dotenv";
+import FileService from "../service/fileService.js";
 
 dotenv.config();
 
@@ -33,7 +34,9 @@ export default new class PostController {
         try {
             const postData = req.body;
             if (postData.categories === "all") return res.status(400).json("Фигня запрос");
-            const PostObject = await Post.create(postData)
+            const PostObject = await Post.create(postData);
+            const uri = `${req.protocol}://${req.get('host')}`
+            MailService.sendAllUsers(`/post/${PostObject._id}`, uri)
             return res.status(200).json(PostObject);
         } catch (e) {
             next(e)
@@ -128,5 +131,24 @@ export default new class PostController {
             next(e)
         }
     }
-
+    async getBytes(req, res) {
+        try {
+            const bytes = await FileService.getSizeDir();
+            res.status(200).json(bytes);
+        }
+        catch (e) {
+            console.log(e)
+            return res.status(500).json(e)
+        }
+    }
+    async clearBytes(req, res) {
+        try {
+            await FileService.clearFile()
+            res.status(200).json();
+        }
+        catch (e) {
+            console.log(e)
+            return res.status(500).json(e)
+        }
+    }
 }

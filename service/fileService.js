@@ -1,6 +1,7 @@
 import * as uuid from 'uuid';
 import * as path from "path";
 import * as fs from "fs";
+import Post from "../models/Post.js";
 
 function getSize(path){
     let size = 0;
@@ -16,7 +17,7 @@ function getSize(path){
 
 class fileService {
      async getSizeDir() {
-        return getSize('eventsImage') / 2 ** 10 / 2 ** 10;
+        return getSize('static') / 2 ** 10 / 2 ** 10;
     }
     async saveFile(file){
         try{
@@ -47,6 +48,26 @@ class fileService {
        catch (e) {
            return 0;
        }
+    }
+    async clearFile() {
+        const posts = await Post.find()
+
+        let ll = []
+        posts.forEach((obj) => {
+            ll.push(obj.urlPreview);
+            obj.content.forEach(item => {
+                if (item.startsWith("image")) {
+                    ll.push(item.slice(6));
+                }
+            })
+        })
+        fs.readdir('./static/', (err, files) => {
+            files.forEach(filename => {
+              if (!ll.includes(filename)){
+                  this.deleteFile(filename)
+              }
+            });
+          });
     }
 }
 
