@@ -7,6 +7,7 @@ import fileUpload from 'express-fileupload';
 import postRouter from "./router/postRouter.js";
 import categories_router from "./router/categoriesRouter.js";
 import mailer_router from "./router/mailerRouter.js"
+import other_info_router from "./router/otherInfoRouter.js"
 
 
 dotenv.config();
@@ -18,8 +19,10 @@ app.use(express.json());
 app.use("/auth", authRouter);
 app.use("/api", postRouter);
 app.use("/api", categories_router);
+app.use("/api", other_info_router);
 app.use("/mail", mailer_router)
 app.use(express.static("static"));
+app.use(express.static("cert"));
 app.use(fileUpload({}));
 
 

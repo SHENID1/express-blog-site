@@ -1,6 +1,5 @@
 import Categories from "../models/Categories.js";
 import Post from "../models/Post.js";
-import MailService from "../service/mailService.js";
 
 export default new class CategoriesController {
     async create(req, res, next) {
