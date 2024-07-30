@@ -1,4 +1,4 @@
-import User from '../models/user.js';
+import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import tokenService from "./token-service.js";
 import UserDto from "../dtos/user-dto.js";
@@ -67,8 +67,7 @@ class UserService{
         return {...tokens, user: userDto}
     }
     async getAllUsers() {
-        const users = await User.find();
-        return users
+        return User.find();
     }
 }
 export default new UserService;

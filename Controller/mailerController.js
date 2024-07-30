@@ -12,7 +12,7 @@ export default new class MailerController {
             if (MailUserCandidate) return res.status(400).json({error: 'Mail already exists'})
             const MailUserObject = await MailUser.create({email})
             const uri = `${req.protocol}://${req.get('host')}`
-            mailService.sendFirstEmail(email, uri, MailUserObject)
+            await mailService.sendFirstEmail(email, uri, MailUserObject)
             return res.status(200).json(MailUserObject);
         } catch (e) {
             next(e)

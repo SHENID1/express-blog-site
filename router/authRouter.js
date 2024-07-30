@@ -1,7 +1,7 @@
 import Router from 'express';
 import AuthController from "../Controller/authController.js"
 import cors from "cors";
-import {check} from "express-validator";
+// import {check} from "express-validator";
 import AuthMiddleware from "../middleware/authMiddleware.js";
 import dotenv from "dotenv";
 
@@ -13,10 +13,10 @@ router.use(cors({
     optionSuccessStatus:200,
 }));
 
-router.post("/registration",[
-    check("username", "Имя пользователя не может быть пустым").notEmpty(),
-    check("password", "Пароль дожен быть больше 4 и меньше 10 символов").notEmpty().isLength({min:4, max:15}),
-], AuthController.register)
+// router.post("/registration",[
+//     check("username", "Имя пользователя не может быть пустым").notEmpty(),
+//     check("password", "Пароль дожен быть больше 4 и меньше 10 символов").notEmpty().isLength({min:4, max:15}),
+// ], AuthController.register)
 router.post("/login", AuthController.login)
 router.post('/logout', AuthController.logout);
 router.get('/refresh', AuthController.refresh);

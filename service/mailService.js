@@ -15,8 +15,9 @@ class MailService {
 
     constructor() {
         this.transporter = nodemailer.createTransport({
-            host: "smtp.yandex.ru",
-            port: 465,
+            host: process.env.SMTP_HOST,
+            port: process.env.SMTP_PORT,
+            pool: true,
             secure: true,
             auth: {
                 user: process.env.SMTP_USER,
