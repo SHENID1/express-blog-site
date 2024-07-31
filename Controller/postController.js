@@ -75,7 +75,7 @@ export default new class PostController {
             if (postData.categories === "all") return res.status(400).json("Фигня запрос");
             postData.dateCreated = dayjs().toDate();
             const PostObject = await Post.create(postData);
-            const uri = `${req.protocol}://${req.get('host')}`
+            // const uri = `${req.protocol}://${req.get('host')}`
             return res.status(200).json(PostObject);
         } catch (e) {
             next(e)
@@ -97,7 +97,9 @@ export default new class PostController {
     async update(req, res, next) {
         try {
             const newData = req.body;
+            console.log(newData)
             if (!newData._id) return res.status(400).json({error: 'Не указано _id!'});
+            if (newData.categories === "-1") return res.status(400).json({error: 'Не указано _id!'});
             if (newData.categories === "all") return res.status(400).json({error: 'id is not all!'});
             const updatedPosts = await Post.findByIdAndUpdate({_id: newData._id}, newData, {new: true})
             return res.status(200).json(updatedPosts);
