@@ -33,7 +33,8 @@ class MailService {
             const name = cat.name;
             users.forEach(user => {
                 const linkForm = `${process.env.CLIENT_URL}${link}`
-                this.sendEmail(user.email, linkForm, `${originUrl}/mail/remove/${user._id}`, data, name)
+                const linkImage = `${originUrl}/${data.urlPreview}`
+                this.sendEmail(user.email, linkForm, `${originUrl}/mail/remove/${user._id}`, data, name, linkImage)
             })
         } catch (e) {
             throw e;
@@ -56,7 +57,7 @@ class MailService {
         })
     }
 
-    async sendEmail(to, link, unsubscribe_link, data, name) {
+    async sendEmail(to, link, unsubscribe_link, data, name, linkImage) {
         const imageFileName = data.urlPreview;
         const date = dayjs(data?.dateCreated).locale("ru");
         const dateSting = date.format("DD.MM.YYYY");
@@ -75,7 +76,7 @@ class MailService {
                 font-family: Inter, Arial, sans-serif;
                 color: black;
                 box-sizing: border-box;
-'>
+' id='${date.toString() + imageFileName.title}'>
     <div
             style='
            background-color: lightgray;
@@ -94,19 +95,13 @@ class MailService {
         <div style='
                         height: max-content;
                     '>
-            <div style='
-                            font-family: Luminari, fantasy;
-                            font-optical-sizing: auto;
-                            font-weight: 400;
-                            font-style: normal;
-                            font-size: 35px;
-                            margin-right: 30px;
-                            margin-left: 10px;
-                            color: #000000;
-                            user-select: none;
-                        '>
-                Все Закупки
-            </div>
+           <img style='
+            height: 64px;
+            width: auto;
+            margin-bottom: 10px;
+            color: black;
+            text-decoration: none;
+          ' alt="" src="https://vsezakup.ru/logo-black.png"/>
         </div>
 
 
@@ -118,7 +113,7 @@ class MailService {
     margin-bottom: 10px;
     color: black;
     text-decoration: none;
-  ' alt="" src="cid:logo"/>
+  ' alt="" src='${linkImage}'/>
         <div style='
                         width: 100%;
                         height: 100%;'
@@ -182,12 +177,12 @@ class MailService {
                 subject: "Все Закупки",
                 text: "",
                 html: content,
-                attachments: [
-                    {   // utf-8 string as an attachment
-                        filename: data.urlPreview,
-                        path: imagePath,
-                        cid: 'logo'
-                    },],
+                // attachments: [
+                //     {   // utf-8 string as an attachment
+                //         filename: data.urlPreview,
+                //         path: imagePath,
+                //         cid: 'logo'
+                //     },],
             })
         } catch (e) {
             await this.transporter.sendMail({
