@@ -5,6 +5,16 @@ import mailService from "../service/mailService.js";
 dotenv.config();
 
 export default new class MailerController {
+    async getUsers(req, res, next) {
+        try {
+            const Count = await MailUser.countDocuments({})
+            const mailList = await MailUser.find({}).limit(100);
+            return res.status(200).json({Count, mailList});
+        } catch (e) {
+            next(e)
+        }
+    }
+
     async createUser(req, res, next) {
         try {
             const {email} = req.body

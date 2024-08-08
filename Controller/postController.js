@@ -18,7 +18,7 @@ export default new class PostController {
             await Certificates.create({name: fileName})
             res.status(200).json(fileName);
         } catch (e) {
-            console.log(e)
+            // console.log(e)
             return res.status(500).json(e)
         }
     }
@@ -53,7 +53,7 @@ export default new class PostController {
             const fileName = await fileService.saveFile(req.files.file)
             res.status(200).json(fileName);
         } catch (e) {
-            console.log(e)
+            // console.log(e)
             return res.status(500).json(e)
         }
     }
@@ -97,7 +97,7 @@ export default new class PostController {
     async update(req, res, next) {
         try {
             const newData = req.body;
-            console.log(newData)
+            // console.log(newData)
             if (!newData._id) return res.status(400).json({error: 'Не указано _id!'});
             if (newData.categories === "-1") return res.status(400).json({error: 'Не указано _id!'});
             if (newData.categories === "all") return res.status(400).json({error: 'id is not all!'});
@@ -201,7 +201,6 @@ export default new class PostController {
             const bytes = await FileService.getSizeDir();
             res.status(200).json(bytes);
         } catch (e) {
-            console.log(e)
             return res.status(500).json(e)
         }
     }
@@ -211,7 +210,6 @@ export default new class PostController {
             await FileService.clearFile()
             res.status(200).json();
         } catch (e) {
-            console.log(e)
             return res.status(500).json(e)
         }
     }
